@@ -1,6 +1,5 @@
 package com.krupnov.shoppinglist.presentation
 
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +12,15 @@ import com.krupnov.shoppinglist.domain.ShopItem
 
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
 
-    var count= 0
-
+    var count = 0
     var shopList = listOf<ShopItem>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
+
+    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
+    var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         Log.d("ShopListAdapter", "onCreateViewHolder, count: ${++count}")
@@ -35,7 +36,11 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
         val shopItem = shopList[position]
         viewHolder.view.setOnLongClickListener {
+            onShopItemLongClickListener?.invoke(shopItem)
             true
+        }
+        viewHolder.view.setOnClickListener {
+            onShopItemClickListener?.invoke(shopItem)
         }
         viewHolder.tvName.text = shopItem.name
         viewHolder.tvCount.text = shopItem.count.toString()
@@ -45,7 +50,12 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         super.onViewRecycled(viewHolder)
         viewHolder.tvName.text = ""
         viewHolder.tvCount.text = ""
-        viewHolder.tvName.setTextColor(ContextCompat.getColor(viewHolder.view.context, android.R.color.white))
+        viewHolder.tvName.setTextColor(
+            ContextCompat.getColor(
+                viewHolder.view.context,
+                android.R.color.white
+            )
+        )
     }
 
     override fun getItemCount(): Int {
@@ -64,6 +74,11 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val tvName = view.findViewById<TextView>(R.id.tv_name)
         val tvCount = view.findViewById<TextView>(R.id.tv_count)
+    }
+
+    interface OnShopItemLongClickListener {
+
+        fun onShopItemClick(shopItem: ShopItem)
     }
 
     companion object {
