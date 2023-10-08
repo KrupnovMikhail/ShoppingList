@@ -13,7 +13,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.krupnov.shoppinglist.R
 import com.krupnov.shoppinglist.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
@@ -26,6 +26,10 @@ class ShopItemActivity : AppCompatActivity() {
             launchRightMode()
         }
 
+    }
+
+    override fun onEditingFinished() {
+        finish()
     }
 
     private fun launchRightMode() {
