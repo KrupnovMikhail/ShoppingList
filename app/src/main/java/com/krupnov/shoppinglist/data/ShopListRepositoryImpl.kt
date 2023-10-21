@@ -2,14 +2,16 @@ package com.krupnov.shoppinglist.data
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.krupnov.shoppinglist.domain.ShopItem
 import com.krupnov.shoppinglist.domain.ShopListRepository
 import kotlin.random.Random
 
 class ShopListRepositoryImpl(
     application: Application
-): ShopListRepository {
+) : ShopListRepository {
 
     private val shopListDao = AppDatabase.getInstance(application).shopListDao()
     private val mapper = ShopListMapper()
@@ -31,5 +33,9 @@ class ShopListRepositoryImpl(
         return mapper.mapDbModelToEntity(dbModel)
     }
 
-    override fun getShopList(): LiveData<List<ShopItem>> = shopListDao.getShopList()
+    override fun getShopList(): LiveData<List<ShopItem>> = Transformations.map(
+        shopListDao.getShopList()
+    ) {
+        mapper.mapListDbModelToListEntity(it)
+    }
 }
